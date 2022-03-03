@@ -51,7 +51,7 @@ pipeline{
                     dir('kubernetes/') {
                         withEnv(['DATREE_TOKEN=fsQNDSGM8uAhuLwXfsuSWU']) {
                               sh 'pwd'
-                              sh 'helm datree test kubernetes/myapp/'
+                              sh 'helm datree test myapp/'
                               
                         }
                     }
