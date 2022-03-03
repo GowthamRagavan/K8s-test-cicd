@@ -48,11 +48,10 @@ pipeline{
         stage('indentifying misconfigs using datree in helm charts'){
             steps{
                 script{
+
+                    dir('kubernetes/') {
                         withEnv(['DATREE_TOKEN=fsQNDSGM8uAhuLwXfsuSWU']) {
-                            
-                            sh 'pwd'
                             sh 'helm datree test /var/lib/jenkins/workspace/k8s_test_cicd/kubernetes/myapp'
-                              
                         }
                     }
                 }
