@@ -1,5 +1,9 @@
 pipeline{
     agent any
+    environment{
+        VERSION = "${env.BUILD_ID}"
+    }
+
     stages{
         stage("Sonar Quality Check"){
             agent{
@@ -13,7 +17,7 @@ pipeline{
                             sh 'chmod +x gradlew'
                             sh './gradlew sonarqube'
                     }
-                    
+
                     timeout(time: 1, unit: 'HOURS') {
                       def qg = waitForQualityGate()
                       if (qg.status != 'OK') {
@@ -24,6 +28,21 @@ pipeline{
                 }
             }
 
+        }
+
+        stage("docker build & docker push"){
+            steps{
+                script{
+                    withCredentials([string(credentialsId: 'docker_pass', variable: 'docker_password')]) {
+                             sh '''
+                                docker build -t 18.169.53.99:8083/springapp:${VERSION} .
+                                docker login -u admin -p $docker_password 18.169.53.99:8083 
+                                docker push  18.169.53.99:8083/springapp:${VERSION}
+                                docker rmi 18.169.53.99:8083/springapp:${VERSION}
+                            '''
+                    }
+                }
+            }
         }
     }
 }
